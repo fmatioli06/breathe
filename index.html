@@ -79,7 +79,7 @@ body{color:#f0f4ff;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:
 .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px}
 .cal-dow span{font-size:10px;color:#56718f;text-align:center;padding:2px 0;letter-spacing:0.04em}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:28px}
-.cal-day{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--surface);color:#56718f;border:1px solid var(--border)}
+.cal-day{aspect-ratio:1;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;background:var(--surface);color:#56718f;border:1px solid var(--border);line-height:1.2}
 .cal-day.done{background:var(--accent-dim);color:var(--accent);font-weight:600;border-color:var(--accent2)}
 .cal-day.today{outline:1px solid var(--blue);outline-offset:-1px;color:var(--blue)}
 .cal-day.empty{background:transparent;border-color:transparent}
@@ -220,7 +220,10 @@ body{color:#f0f4ff;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:
 <div id="pageSess" class="gone" style="background:#080c12;min-height:100vh">
   <div class="sess-top">
     <button class="bk" onclick="goHome()">← Back</button>
-    <button class="mute-btn" id="muteBtn" onclick="toggleMute()">Sound on</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="mute-btn" id="testSndBtn" onclick="testSound()" style="font-size:10px;padding:9px 12px">Test sound</button>
+      <button class="mute-btn" id="muteBtn" onclick="toggleMute()">Sound on</button>
+    </div>
   </div>
   <div class="sess-header">
     <div id="doneBox" class="done-card gone">
@@ -440,13 +443,49 @@ var muted=false;
 function toggleMute(){
   muted=!muted;
   var btn=document.getElementById('muteBtn');
-  btn.textContent=muted?'Sound off':'Sound on';
-  btn.classList.toggle('muted',muted);
+  if(muted){
+    btn.textContent='Sound off';
+    btn.classList.add('muted');
+  } else {
+    btn.textContent='Sound on';
+    btn.classList.remove('muted');
+    if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();
+    unlockAudio();
+  }
 }
 
 function initAudio(){
   if(audioCtx)return;
-  try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
+  try{
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  }catch(e){}
+}
+
+function unlockAudio(){
+  if(!audioCtx)return;
+  if(audioCtx.state==='suspended'){
+    audioCtx.resume();
+  }
+  try{
+    var buf=audioCtx.createBuffer(1,1,22050);
+    var src=audioCtx.createBufferSource();
+    src.buffer=buf;
+    src.connect(audioCtx.destination);
+    src.start(0);
+  }catch(e){}
+}
+
+function testSound(){
+  initAudio();
+  unlockAudio();
+  if(!audioCtx||muted)return;
+  setTimeout(function(){
+    playTone(260,'sine',0.4,0.04,0.15,180);
+    setTimeout(function(){playTone(180,'sine',0.4,0.04,0.15,260);},450);
+  },50);
+  var btn=document.getElementById('testSndBtn');
+  btn.textContent='Playing...';
+  setTimeout(function(){btn.textContent='Test sound';},1000);
 }
 
 function playTone(freq,type,duration,fadeIn,fadeOut,startFreq){
@@ -515,7 +554,10 @@ function resetUI(){
 function doStart(){
   if(running)return;
   initAudio();
-  if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();
+  unlockAudio();
+  setTimeout(function(){
+    if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();
+  },100);
   running=true;pi=0;ptick=0;rnd=1;
   document.getElementById('startB').classList.add('gone');
   document.getElementById('stopB').classList.remove('gone');
@@ -611,12 +653,56 @@ function saveSession(){
   document.getElementById('doneSub').textContent=cur.rounds+' rounds complete · '+s.streak+' day streak';
 }
 
+function sessionMinutes(){
+  var secPerCycle=cycleDuration(cur);
+  return Math.round((selectedRounds*secPerCycle)/60*10)/10;
+}
+
+function saveSession(){
+  var today=new Date().toISOString().split('T')[0];
+  var yesterday=new Date(Date.now()-86400000).toISOString().split('T')[0];
+  var s=loadData();
+  s.history=s.history||[];
+
+  var mins=sessionMinutes();
+
+  s.history.push({date:today,id:cur.id,name:cur.name,tag:cur.tag,rounds:selectedRounds,mins:mins});
+  if(s.history.length>180)s.history=s.history.slice(-180);
+
+  var todayMins=s.history.filter(function(h){return h.date===today;})
+    .reduce(function(sum,h){return sum+(h.mins||0);},0);
+
+  var streakQualified=todayMins>=5;
+  var alreadyCounted=s.streakDate===today;
+
+  if(streakQualified&&!alreadyCounted){
+    if(s.streakDate===yesterday){
+      s.streak=(s.streak||0)+1;
+    } else if(s.streakDate!==today){
+      s.streak=1;
+    }
+    s.streakDate=today;
+  }
+
+  if((s.streak||0)>(s.best||0))s.best=s.streak||0;
+  s.total=(s.total||0)+1;
+
+  saveData(s);
+
+  var streakMsg=streakQualified
+    ?(alreadyCounted?s.streak+' day streak ✓':'streak day unlocked — '+s.streak+' days')
+    :'need '+(5-todayMins).toFixed(1)+'m more for streak';
+
+  document.getElementById('doneBox').classList.remove('gone');
+  document.getElementById('doneSub').textContent=mins.toFixed(1)+'m complete · '+streakMsg;
+}
+
 function loadStreaks(){
   var s=loadData();
   var today=new Date().toISOString().split('T')[0];
   var yesterday=new Date(Date.now()-86400000).toISOString().split('T')[0];
   var streak=s.streak||0;
-  if(s.lastDate&&s.lastDate!==today&&s.lastDate!==yesterday)streak=0;
+  if(s.streakDate&&s.streakDate!==today&&s.streakDate!==yesterday)streak=0;
   document.getElementById('sCur').textContent=streak;
   document.getElementById('sBest').textContent=s.best||0;
   document.getElementById('sTot').textContent=s.total||0;
@@ -638,25 +724,58 @@ function renderProgress(){
   var dim=new Date(calYear,calMonth+1,0).getDate();
   var fd=new Date(calYear,calMonth,1).getDay();
   var todayStr=now.toISOString().split('T')[0];
-  var done={};
-  history.forEach(function(h){if(h.date){var d=new Date(h.date);if(d.getFullYear()===calYear&&d.getMonth()===calMonth)done[d.getDate()]=true;}});
+
+  var dayMins={};
+  history.forEach(function(h){
+    if(h.date){
+      var d=new Date(h.date);
+      if(d.getFullYear()===calYear&&d.getMonth()===calMonth){
+        var day=d.getDate();
+        dayMins[day]=(dayMins[day]||0)+(h.mins||0);
+      }
+    }
+  });
+
   var cg=document.getElementById('calGrid');cg.innerHTML='';
   for(var i=0;i<fd;i++){var e=document.createElement('div');e.className='cal-day empty';cg.appendChild(e);}
   for(var d=1;d<=dim;d++){
-    var cell=document.createElement('div');
     var ds=calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-    cell.className='cal-day'+(done[d]?' done':'')+(ds===todayStr?' today':'');
-    cell.textContent=d;cg.appendChild(cell);
+    var mins=dayMins[d]||0;
+    var qualified=mins>=5;
+    var cell=document.createElement('div');
+    cell.className='cal-day'+(qualified?' done':'')+(ds===todayStr?' today':'');
+    cell.innerHTML=d+(mins>0?'<span style="display:block;font-size:8px;line-height:1;margin-top:1px;opacity:0.8">'+Math.round(mins)+'m</span>':'');
+    cg.appendChild(cell);
   }
+
   var hl=document.getElementById('histList');hl.innerHTML='';
-  var recent=history.slice().reverse().slice(0,15);
-  if(recent.length===0){hl.innerHTML='<div class="empty-state">No sessions yet.<br>Complete your first session to start tracking.</div>';return;}
-  recent.forEach(function(h){
+
+  var dayMap={};
+  history.forEach(function(h){
+    if(!dayMap[h.date])dayMap[h.date]={date:h.date,sessions:[],totalMins:0};
+    dayMap[h.date].sessions.push(h);
+    dayMap[h.date].totalMins+=(h.mins||0);
+  });
+  var days=Object.keys(dayMap).sort().reverse().slice(0,14);
+
+  if(days.length===0){hl.innerHTML='<div class="empty-state">No sessions yet.<br>Complete your first session to start tracking.</div>';return;}
+
+  days.forEach(function(dateStr){
+    var day=dayMap[dateStr];
+    var d=new Date(dateStr+'T12:00:00');
+    var lbl=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    var qualified=day.totalMins>=5;
     var div=document.createElement('div');div.className='hist-item';
-    var d=new Date(h.date+'T12:00:00');
-    var lbl=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    div.innerHTML='<div><div class="hi-name">'+h.name+'</div><div class="hi-date">'+lbl+'</div></div>'+
-      '<div class="hi-tag" style="color:'+(tAcc[h.tag]||'#4af0c4')+'">'+h.tag+'</div>';
+    var techNames=day.sessions.map(function(s){return s.name;}).filter(function(v,i,a){return a.indexOf(v)===i;}).join(', ');
+    div.innerHTML=
+      '<div>'+
+        '<div class="hi-name">'+lbl+'</div>'+
+        '<div class="hi-date">'+techNames+'</div>'+
+      '</div>'+
+      '<div style="text-align:right">'+
+        '<div style="font-size:16px;font-weight:600;color:'+(qualified?'#4af0c4':'#8fa8c8')+'">'+Math.round(day.totalMins)+'m</div>'+
+        '<div style="font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:'+(qualified?'#4af0c4':'#56718f')+';margin-top:2px">'+(qualified?'streak ✓':'< 5m')+'</div>'+
+      '</div>';
     hl.appendChild(div);
   });
 }
