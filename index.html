@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#080c12">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Breathe</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&amp;display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-text-size-adjust:100%}
 :root{
@@ -119,8 +117,14 @@ body{color:#f0f4ff;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:
 .pname{font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:3px;color:#f0f4ff !important;-webkit-text-fill-color:#f0f4ff;line-height:1}
 .psub{font-size:13px;color:#8fa8c8;margin-top:8px;font-weight:400;letter-spacing:0.05em}
 
-.rtrack{text-align:center;font-size:11px;color:#56718f;margin:10px 0 22px;letter-spacing:0.12em;text-transform:uppercase}
+.rtrack{text-align:center;font-size:11px;color:#56718f;margin:10px 0 16px;letter-spacing:0.12em;text-transform:uppercase}
 .rtrack b{color:#8fa8c8;font-weight:500}
+.rounds-selector{display:flex;align-items:center;justify-content:center;gap:0;margin:0 20px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.rounds-lbl{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#56718f;font-weight:600;padding:0 14px;border-right:1px solid var(--border);white-space:nowrap}
+.rounds-opts{display:flex;flex:1}
+.ropt{flex:1;padding:10px 4px;text-align:center;font-size:13px;font-weight:500;color:#56718f;cursor:pointer;border:none;background:transparent;font-family:'DM Sans',sans-serif;transition:all 0.15s;border-right:1px solid var(--border);line-height:1}
+.ropt:last-child{border-right:none}
+.ropt.on{background:var(--surface3);color:var(--accent);font-weight:600}
 
 .btn-area{padding:0 20px}
 .gbtn{display:block;width:100%;padding:20px;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;border:none;text-align:center;margin-bottom:12px;transition:all 0.15s;font-family:'DM Sans',sans-serif;letter-spacing:0.1em;text-transform:uppercase}
@@ -174,14 +178,14 @@ body{color:#f0f4ff;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:
       <button class="fb" onclick="filt('recovery',this)">Recovery</button>
       <button class="fb" onclick="filt('anytime',this)">Anytime</button>
     </div>
-    <div class="cgrid" id="grid"></div>
+    <div class="cgrid" id="grid"><div class="card"><div class="card-top-bar" style="background:#f5c842"></div><div class="cdot dm"></div><div class="ctag tm">morning</div><div class="cname">5.5 Breath</div><div class="csnip">The "perfect breath" — 5.5s in, 5.5s out. Hits the resonance frequency o...</div><div class="cpat">5.5s in · 5.5s out</div></div><div class="card"><div class="card-top-bar" style="background:#ff6b8a"></div><div class="cdot da"></div><div class="ctag ta">anytime</div><div class="cname">Box Breathing</div><div class="csnip">Four equal sides: inhale, hold, exhale, hold. Builds CO₂ tolerance and t...</div><div class="cpat">4s in · 4s hold · 4s out · 4s hold</div></div><div class="card"><div class="card-top-bar" style="background:#4d9fff"></div><div class="cdot dr"></div><div class="ctag tr">recovery</div><div class="cname">Extended Exhale</div><div class="csnip">Double the exhale to stimulate the vagus nerve. Lowers cortisol and shif...</div><div class="cpat">4s in · 8s out</div></div><div class="card"><div class="card-top-bar" style="background:#f5c842"></div><div class="cdot dm"></div><div class="ctag tm">morning</div><div class="cname">Humming Breath</div><div class="csnip">Inhale, then exhale with a sustained hum. Nasal vibration boosts nitric ...</div><div class="cpat">4s in · 8s hum out</div></div><div class="card"><div class="card-top-bar" style="background:#4af0c4"></div><div class="cdot dt"></div><div class="ctag tt">training</div><div class="cname">Buteyko Reduced</div><div class="csnip">Breathe less to rebuild CO₂ tolerance. Short hold after exhale trains th...</div><div class="cpat">3s in · 4s out · 5s hold</div></div><div class="card"><div class="card-top-bar" style="background:#f5c842"></div><div class="cdot dm"></div><div class="ctag tm">morning</div><div class="cname">Tummo Breath</div><div class="csnip">30 deep nasal cycles then retention hold. Releases spleen-stored red blo...</div><div class="cpat">30 cycles + retention</div></div></div>
   </div>
 
   <div id="tabProg" class="gone tab-inner">
     <div class="cal-nav">
-      <button onclick="changeMonth(-1)">&#8592;</button>
+      <button onclick="changeMonth(-1)">←</button>
       <span class="cal-month" id="calMonthLbl"></span>
-      <button onclick="changeMonth(1)">&#8594;</button>
+      <button onclick="changeMonth(1)">→</button>
     </div>
     <div class="cal-dow"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
     <div class="cal-grid" id="calGrid"></div>
@@ -231,16 +235,12 @@ body{color:#f0f4ff;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:
 
   <div class="circle-section">
     <svg width="280" height="280" viewBox="0 0 280 280">
-      <circle cx="140" cy="140" r="126" fill="none" stroke="#1d2840" stroke-width="1"/>
-      <circle cx="140" cy="140" r="126" fill="none" stroke="#0d3028" stroke-width="12"/>
-      <circle id="outerRing" cx="140" cy="140" r="126" fill="none" stroke-width="4"
-        stroke-dasharray="792" stroke-dashoffset="792" stroke-linecap="round"
-        transform="rotate(-90 140 140)" style="stroke:#4af0c4;transition:stroke 0.35s"/>
-      <circle id="breathBlob" cx="140" cy="140" r="48" style="fill:#0d3028;transition:fill 0.35s"/>
-      <circle id="glowRing" cx="140" cy="140" r="48" fill="none"
-        stroke-width="1.5" style="stroke:#4af0c4;opacity:0.4;transition:stroke 0.35s"/>
-      <text id="centerCount" x="140" y="155" text-anchor="middle"
-        style="font-family:'Bebas Neue',sans-serif;font-size:56px;fill:#4af0c4;letter-spacing:3px">—</text>
+      <circle cx="140" cy="140" r="126" fill="none" stroke="#1d2840" stroke-width="1"></circle>
+      <circle cx="140" cy="140" r="126" fill="none" stroke="#0d3028" stroke-width="12"></circle>
+      <circle id="outerRing" cx="140" cy="140" r="126" fill="none" stroke-width="4" stroke-dasharray="792" stroke-dashoffset="792" stroke-linecap="round" transform="rotate(-90 140 140)" style="stroke:#4af0c4;transition:stroke 0.35s"></circle>
+      <circle id="breathBlob" cx="140" cy="140" r="48" style="fill:#0d3028;transition:fill 0.35s"></circle>
+      <circle id="glowRing" cx="140" cy="140" r="48" fill="none" stroke-width="1.5" style="stroke:#4af0c4;opacity:0.4;transition:stroke 0.35s"></circle>
+      <text id="centerCount" x="140" y="155" text-anchor="middle" style="font-family:'Bebas Neue',sans-serif;font-size:56px;fill:#4af0c4;letter-spacing:3px">—</text>
     </svg>
   </div>
 
@@ -248,7 +248,12 @@ body{color:#f0f4ff;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:
     <div class="pname" id="pnEl">READY</div>
     <div class="psub" id="psEl">Tap start when ready</div>
   </div>
-  <div class="rtrack">Round <b id="rcEl">0</b> / <b id="rtEl">0</b></div>
+  <div class="rtrack" id="rtrackEl">Round <b id="rcEl">0</b> / <b id="rtEl">0</b></div>
+
+  <div class="rounds-selector" id="roundsSel">
+    <div class="rounds-lbl">Rounds</div>
+    <div class="rounds-opts" id="roundsOpts"></div>
+  </div>
 
   <div class="btn-area">
     <button class="gbtn go" id="startB" onclick="doStart()">Start Session</button>
@@ -313,6 +318,52 @@ var TECH=[
 var cur=null,tmr=null,running=false,pi=0,ptick=0,rnd=0;
 var C=792;
 var calYear,calMonth;
+var selectedRounds=0;
+
+function cycleDuration(tech){
+  return tech.ph.reduce(function(sum,p){return sum+p.d;},0);
+}
+
+function buildRoundsSelector(tech){
+  var cycSec=cycleDuration(tech);
+  var defaultRounds=tech.rounds;
+  selectedRounds=defaultRounds;
+
+  var timeTargets=[3,5,7,10];
+  var timeOpts=timeTargets.map(function(mins){
+    return {label:mins+'m',rounds:Math.max(1,Math.round((mins*60)/cycSec))};
+  });
+
+  var container=document.getElementById('roundsOpts');
+  container.innerHTML='';
+
+  var defBtn=document.createElement('button');
+  defBtn.className='ropt on';
+  defBtn.innerHTML='<span style="display:block;font-size:13px">'+defaultRounds+'</span><span style="display:block;font-size:9px;opacity:0.7;margin-top:1px">default</span>';
+  defBtn.onclick=function(){
+    selectedRounds=defaultRounds;
+    document.querySelectorAll('.ropt').forEach(function(b){b.classList.remove('on')});
+    defBtn.classList.add('on');
+    document.getElementById('rtEl').textContent=defaultRounds;
+  };
+  container.appendChild(defBtn);
+
+  timeOpts.forEach(function(opt){
+    if(opt.rounds===defaultRounds)return;
+    var btn=document.createElement('button');
+    btn.className='ropt';
+    btn.innerHTML='<span style="display:block;font-size:13px">'+opt.rounds+'</span><span style="display:block;font-size:9px;opacity:0.7;margin-top:1px">~'+opt.label+'</span>';
+    btn.onclick=function(){
+      selectedRounds=opt.rounds;
+      document.querySelectorAll('.ropt').forEach(function(b){b.classList.remove('on')});
+      btn.classList.add('on');
+      document.getElementById('rtEl').textContent=opt.rounds;
+    };
+    container.appendChild(btn);
+  });
+
+  document.getElementById('rtEl').textContent=defaultRounds;
+}
 var tc={morning:'tm',training:'tt',recovery:'tr',anytime:'ta'};
 var dc={morning:'dm',training:'dt',recovery:'dr',anytime:'da'};
 var tAcc={morning:'#f5c842',training:'#4af0c4',recovery:'#4d9fff',anytime:'#ff6b8a'};
@@ -371,7 +422,7 @@ function openSess(id){
   document.getElementById('whyEl').innerHTML=cur.why.map(function(w){
     return '<div class="wi"><div class="wd"></div>'+w+'</div>';
   }).join('');
-  document.getElementById('rtEl').textContent=cur.rounds;
+  buildRoundsSelector(cur);
   resetUI();
 }
 
@@ -408,13 +459,13 @@ function playTone(freq,type,duration,fadeIn,fadeOut,startFreq){
     var now=audioCtx.currentTime;
     if(startFreq){
       osc.frequency.setValueAtTime(startFreq,now);
-      osc.frequency.linearRampToValueAtTime(freq,now+duration*0.8);
+      osc.frequency.linearRampToValueAtTime(freq,now+duration*0.75);
     } else {
       osc.frequency.setValueAtTime(freq,now);
     }
     gain.gain.setValueAtTime(0,now);
-    gain.gain.linearRampToValueAtTime(0.18,now+(fadeIn||0.05));
-    gain.gain.setValueAtTime(0.18,now+duration-(fadeOut||0.1));
+    gain.gain.linearRampToValueAtTime(0.45,now+(fadeIn||0.04));
+    gain.gain.setValueAtTime(0.45,now+duration-(fadeOut||0.12));
     gain.gain.linearRampToValueAtTime(0,now+duration);
     osc.start(now);osc.stop(now+duration);
   }catch(e){}
@@ -423,28 +474,34 @@ function playTone(freq,type,duration,fadeIn,fadeOut,startFreq){
 function playChime(notes,interval){
   if(!audioCtx||muted)return;
   notes.forEach(function(n,i){
-    setTimeout(function(){playTone(n,'sine',0.4,0.02,0.2);},i*interval);
+    setTimeout(function(){playTone(n,'sine',0.5,0.02,0.15);},i*interval);
   });
 }
 
 function soundForPhase(dir){
   if(!audioCtx||muted)return;
   if(dir==='in'){
-    playTone(220,'sine',0.5,0.05,0.1,160);
+    playTone(260,'sine',0.6,0.04,0.15,180);
+    setTimeout(function(){playTone(320,'triangle',0.35,0.02,0.2);},80);
   } else if(dir==='out'){
-    playTone(160,'sine',0.5,0.05,0.1,220);
+    playTone(180,'sine',0.6,0.04,0.15,260);
+    setTimeout(function(){playTone(220,'triangle',0.3,0.02,0.2);},80);
   } else {
-    playTone(196,'sine',0.25,0.02,0.15);
+    playTone(220,'sine',0.18,0.02,0.08);
+    setTimeout(function(){playTone(220,'sine',0.18,0.02,0.08);},220);
   }
 }
 
 function resetUI(){
   document.getElementById('rcEl').textContent='0';
+  document.getElementById('rtEl').textContent=selectedRounds||0;
   document.getElementById('pnEl').textContent='READY';
   document.getElementById('psEl').textContent='Tap start when ready';
   document.getElementById('startB').classList.remove('gone');
   document.getElementById('stopB').classList.add('gone');
   document.getElementById('doneBox').classList.add('gone');
+  document.getElementById('roundsSel').classList.remove('gone');
+  document.getElementById('rtrackEl').style.marginBottom='16px';
   document.getElementById('outerRing').style.strokeDashoffset=C;
   document.getElementById('outerRing').style.stroke=COLORS.in.ring;
   document.getElementById('breathBlob').setAttribute('r',BLOB_MIN);
@@ -463,7 +520,10 @@ function doStart(){
   document.getElementById('startB').classList.add('gone');
   document.getElementById('stopB').classList.remove('gone');
   document.getElementById('doneBox').classList.add('gone');
+  document.getElementById('roundsSel').classList.add('gone');
+  document.getElementById('rtrackEl').style.marginBottom='22px';
   document.getElementById('rcEl').textContent='1';
+  document.getElementById('rtEl').textContent=selectedRounds;
   tick();tmr=setInterval(tick,100);
 }
 
@@ -484,7 +544,7 @@ function tick(){
     ptick=0;pi++;
     if(pi>=cur.ph.length){
       pi=0;rnd++;
-      if(rnd>cur.rounds){finish();return;}
+      if(rnd>selectedRounds){finish();return;}
       document.getElementById('rcEl').textContent=rnd;
     }
   }
@@ -517,6 +577,8 @@ function finish(){
   clearInterval(tmr);tmr=null;running=false;
   document.getElementById('startB').classList.remove('gone');
   document.getElementById('stopB').classList.add('gone');
+  document.getElementById('roundsSel').classList.remove('gone');
+  document.getElementById('rtrackEl').style.marginBottom='16px';
   document.getElementById('pnEl').textContent='DONE';
   document.getElementById('psEl').textContent='Great work';
   document.getElementById('outerRing').style.strokeDashoffset=C;
@@ -603,5 +665,6 @@ var _n=new Date();calYear=_n.getFullYear();calMonth=_n.getMonth();
 renderCards('all');
 loadStreaks();
 </script>
-</body>
-</html>
+
+
+</body></html>
